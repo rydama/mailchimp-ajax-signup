@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example ajax/jsonp MailChimp subscribe form</title>
+
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(function(){
+            // Hijack the submit button. We'll submit the form manually below.
+            $("#submit-button").click(function(e){
+                e.preventDefault();
+
+                if (!isValidEmail($("#subscribe-form"))) {
+                    var error =  "A valid email address must be provided."
+                    $("#subscribe-result").html(error);
+                    $("#subscribe-result").css("color", "red");
+                } else {
+                    $("#subscribe-result").css("color", "black");
+                    $("#subscribe-result").html("Subscribing...");
+                    submitSubscribeForm($("#subscribe-form"));
+                }
+            });
+
+            // Validate the email address in the form
+            function isValidEmail($form) {
+                // If email is empty, show error message.
+                // contains just one @
+                var email = $form.find("input[type='email']").val();
+                if (!email || !email.length) {
+                    return false;
+                } else if (email.indexOf("@") == -1) {
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Submit the form with an ajax/jsonp request.
+            // Based on http://stackoverflow.com/a/15120409/215821
+            function submitSubscribeForm($form) {
+                $.ajax({
+                    type: "GET",
+                    url: $form.attr("action"),
+                    data: $form.serialize(),
+                    cache: false,
+                    dataType: "jsonp",
+                    jsonp: "c", // trigger MailChimp to return a JSONP response
+                    contentType: "application/json; charset=utf-8",
+
+                    error: function(error){
+                        // According to jquery docs, this is never called for cross-domain JSONP requests
+                    },
+
+                    success: function(data){
+                        if (data.result != "success") {
+                            var message = data.msg || "Sorry. Unable to subscribe. Please try again later."
+                            $("#subscribe-result").css("color", "red");
+
+                            if (data.msg && data.msg.indexOf("already subscribed") >= 0) {
+                                message = "You're already subscribed. Thank you."
+                                $("#subscribe-result").css("color", "black");
+                            }
+
+                            $("#subscribe-result").html(message);
+
+                        } else {
+                            $("#subscribe-result").html("Thank you!<br>You must confirm the subscription in your inbox.");
+                            $("#subscribe-result").css("color", "black");
+                        }
+                    }
+                });
+            }
+
+        });
+
+    </script>
+</head>
+
+
+<body>
+
+<!-- If you use this form code, be sure to substitute in your own values
+     for the u and id params in the action url. -->
+<form
+    id="subscribe-form"
+    action="http://yourlist.us6.list-manage.com/subscribe/post-json?u=bbbaafd1d12345c57b712345&id=123456789e"
+    method="get">
+
+    <h3>Want more great content delivered to your inbox?</h3>
+
+    <p>(no spam ever, unsubscribe at any time)</p>
+
+    <div>
+        <input type="email" placeholder="email *" value="" name="EMAIL" >
+        <input type="text" placeholder="first name" value="" name="FNAME">
+    </div>
+
+    <div>
+        <input type="submit" value="Keep Me Updated" name="subscribe" id="submit-button">
+    </div>
+
+    <div id="subscribe-result">
+    </div>
+
+</form>
+
+</body>
+
+</html>
+
+

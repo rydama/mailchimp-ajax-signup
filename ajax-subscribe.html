@@ -50,8 +50,8 @@
         // that element.
         function ajaxMailChimpForm($form, $resultElement){
 
-            // Hijack the submit button. We'll submit the form manually.
-            $form.find("input[type='submit']").click(function(e){
+            // Hijack the submission. We'll submit the form manually.
+            $form.submit(function(e) {
                 e.preventDefault();
 
                 if (!isValidEmail($form)) {

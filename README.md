@@ -1,7 +1,7 @@
 mailchimp-ajax-signup
 =====================
 
-**UPDATE: the MailChimp “Classic” embed form now supports inline/ajax submission without a redirect.
+**UPDATE: this repository is no longer maintained. The MailChimp “Classic” embed form now supports inline/ajax submission without a redirect.
 So, you probably don't need this. Maybe only if you really want to customize.**
 
 
